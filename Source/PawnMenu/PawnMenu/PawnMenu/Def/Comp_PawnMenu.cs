@@ -25,6 +25,11 @@ namespace PawnMenu {
             return setting;
         }
 
+        public override void PostExposeData() {
+            base.PostExposeData();
+            setting.ExposeData();
+        }
+
         public bool contains(ThingDef food) {
             return setting.filter.Allows(food);
         }
