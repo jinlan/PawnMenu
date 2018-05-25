@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{4A8A8DD3-DAD3-4EFD-A904-7BDEFDF56CDC}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <RootNamespace>PawnMenu</RootNamespace>
+    <AssemblyName>PawnMenu</AssemblyName>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <ReleaseVersion>1.0</ReleaseVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\..\..\Assemblies</OutputPath>
+    <DefineConstants>DEBUG;</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <ConsolePause>false</ConsolePause>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <Optimize>true</Optimize>
+    <OutputPath>..\..\..\Assemblies</OutputPath>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <ConsolePause>false</ConsolePause>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="UnityEngine">
+      <HintPath>..\..\..\..\..\RimWorldWin_Data\Managed\UnityEngine.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Assembly-CSharp">
+      <HintPath>..\..\..\..\..\RimWorldWin_Data\Managed\Assembly-CSharp.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="HugsLib">
+      <HintPath>..\..\..\..\HugsLib\Assemblies\HugsLib.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="0Harmony">
+      <HintPath>..\..\..\..\HugsLib\Assemblies\0Harmony.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="PawnMenu\PawnMenu.cs" />
+    <Compile Include="PawnMenu\Def\ITab_NoPriorityStorage.cs" />
+    <Compile Include="PawnMenu\Def\Comp_PawnMenu.cs" />
+    <Compile Include="PawnMenu\Def\CompProperties_PawnMenu.cs" />
+    <Compile Include="PawnMenu\Harmony\CaravanPawnsNeedsUtility_GetFoodScore.cs" />
+    <Compile Include="PawnMenu\Harmony\JobGiver_EatRandom_TryGiveJob.cs" />
+    <Compile Include="PawnMenu\Harmony\FoodUtility.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\..\About\About.xml">
+      <Link>About\About.xml</Link>
+    </None>
+    <None Include="..\..\..\About\Preview.png">
+      <Link>About\Preview.png</Link>
+    </None>
+    <None Include="..\..\..\Assemblies\%24HugsLibChecker.dll">
+      <Link>Assemblies\%24HugsLibChecker.dll</Link>
+    </None>
+    <None Include="..\..\..\Patches\Core\Core.xml">
+      <Link>Patches\Core\Core.xml</Link>
+    </None>
+    <None Include="..\..\..\Assemblies\PawnMenu.dll">
+      <Link>Assemblies\PawnMenu.dll</Link>
+    </None>
+    <None Include="..\..\..\.gitignore">
+      <Link>PawnMenu\.gitignore</Link>
+    </None>
+    <None Include="..\..\..\README.md">
+      <Link>PawnMenu\README.md</Link>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Defs\" />
+    <Folder Include="PawnMenu\" />
+    <Folder Include="PawnMenu\Harmony\" />
+    <Folder Include="PawnMenu\Def\" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+</Project>

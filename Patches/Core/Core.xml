@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Patch>
+	<Operation Class="PatchOperationSequence">
+		<success>Always</success>
+		<operations>
+			<li Class="PatchOperationTest">
+				<xpath>/Defs/ThingDef[defName="Human"]/comps</xpath>
+				<success>Invert</success>
+			</li>
+			<li Class="PatchOperationAdd">
+				<xpath>/Defs/ThingDef[defName="Human"]</xpath>
+				<value>
+					<comps />
+				</value>
+			</li>
+		</operations>
+	</Operation>
+	<Operation Class="PatchOperationAdd">
+		<xpath>/Defs/ThingDef[defName="Human"]/comps</xpath>
+		<value>
+			<li Class="PawnMenu.CompProperties_PawnMenu">
+				<compClass>PawnMenu.Comp_PawnMenu</compClass>
+				<fixedStorageSettings>
+					<filter>
+						<categories>
+							<li>Foods</li>
+						</categories>
+					</filter>
+				</fixedStorageSettings>
+			</li>
+		</value>
+	</Operation>
+	<Operation Class="PatchOperationSequence">
+		<success>Always</success>
+		<operations>
+			<li Class="PatchOperationTest">
+				<xpath>/Defs/ThingDef[defName="Human"]/inspectorTabs</xpath>
+				<success>Invert</success>
+			</li>
+			<li Class="PatchOperationAdd">
+				<xpath>/Defs/ThingDef[defName="Human"]</xpath>
+				<value>
+					<inspectorTabs />
+				</value>
+			</li>
+		</operations>
+	</Operation>
+	<Operation Class="PatchOperationAdd">
+		<xpath>/Defs/ThingDef[defName="Human"]/inspectorTabs</xpath>
+		<value>
+			<li>PawnMenu.ITab_NoPriorityStorage</li>
+		</value>
+	</Operation>
+</Patch>
