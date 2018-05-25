@@ -8,7 +8,9 @@ namespace PawnMenu {
         private StorageSettings setting;
 
         public override void PostSpawnSetup(bool respawningAfterLoad) {
-            setting = new StorageSettings(this);
+            if(setting == null) {
+                setting = new StorageSettings(this);
+            }
         }
 
         bool IStoreSettingsParent.StorageTabVisible {
@@ -27,7 +29,7 @@ namespace PawnMenu {
 
         public override void PostExposeData() {
             base.PostExposeData();
-            setting.ExposeData();
+            Scribe_Deep.Look<StorageSettings>(ref setting, "s");
         }
 
         public bool contains(ThingDef food) {
