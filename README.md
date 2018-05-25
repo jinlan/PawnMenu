@@ -1,2 +1,2 @@
 # PawnMenu
-PawnMenu is Rimworld mod that allow you to specify a pawn to only eat specified kind of food.
+PawnMenu allow you to specify a pawn to eat specified kind of food first.
