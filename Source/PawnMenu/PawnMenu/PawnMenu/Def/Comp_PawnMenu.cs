@@ -7,12 +7,6 @@ namespace PawnMenu {
 
         private StorageSettings setting;
 
-        public override void PostSpawnSetup(bool respawningAfterLoad) {
-            if(setting == null) {
-                setting = new StorageSettings(this);
-            }
-        }
-
         bool IStoreSettingsParent.StorageTabVisible {
             get {
                 return canHaveMenu(parent);
@@ -24,15 +18,23 @@ namespace PawnMenu {
         }
 
         StorageSettings IStoreSettingsParent.GetStoreSettings() {
+            if(setting == null) {
+                setting = new StorageSettings(this);
+            }
             return setting;
         }
 
         public override void PostExposeData() {
             base.PostExposeData();
-            Scribe_Deep.Look<StorageSettings>(ref setting, "s");
+            if(setting != null) {
+                Scribe_Deep.Look<StorageSettings>(ref setting, "s");
+            }
         }
 
         public bool contains(ThingDef food) {
+            if(setting == null) {
+                setting = new StorageSettings(this);
+            }
             return setting.filter.Allows(food);
         }
         public bool canHaveMenu(Thing thing) {
