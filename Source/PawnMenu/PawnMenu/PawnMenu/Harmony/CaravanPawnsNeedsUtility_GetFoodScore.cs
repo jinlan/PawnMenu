@@ -14,7 +14,7 @@ namespace PawnMenu {
                 return true;
             }
             Comp_PawnMenu comp = pawn.GetComp<Comp_PawnMenu>();
-            if(comp != null && comp.canHaveMenu(pawn) && comp.contains(food)) {
+            if(comp != null && comp.activated() && comp.contains(food)) {
                 __result += 10000;
                 return false;
             }

@@ -22,7 +22,7 @@ namespace PawnMenu {
             if(comp == null) {
                 return true;
             }
-            if(!comp.canHaveMenu(eater)) {
+            if(!comp.activated()) {
                 return true;
             }
             ThingOwner<Thing> innerContainer = holder.inventory.innerContainer;
@@ -49,7 +49,7 @@ namespace PawnMenu {
             if(comp == null) {
                 return;
             }
-            if(!comp.canHaveMenu(eater)) {
+            if(!comp.activated()) {
                 return;
             }
             if(comp.contains(foodDef)) {
@@ -72,7 +72,7 @@ namespace PawnMenu {
             if(comp == null) {
                 return true;
             }
-            if(!comp.canHaveMenu(eater)) {
+            if(!comp.activated()) {
                 return true;
             }
             FoodPreferability minPref = FoodPreferability.NeverForNutrition;

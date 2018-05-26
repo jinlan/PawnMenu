@@ -31,9 +31,15 @@ namespace PawnMenu {
             }
         }
 
-        public bool contains(ThingDef food) {
+        public bool activated() {
             if(setting == null) {
-                setting = new StorageSettings(this);
+                return false;
+            }
+            return setting.filter.AllowedDefCount > 0;
+        }
+        public bool contains(ThingDef food) {
+            if(!activated()) {
+                return false;
             }
             return setting.filter.Allows(food);
         }
