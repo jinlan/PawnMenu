@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Harmony;
 using RimWorld;
 using Verse;
@@ -54,6 +55,66 @@ namespace PawnMenu {
             if(comp.contains(foodDef)) {
                 __result += 10000;
             }
+        }
+    }
+
+    [HarmonyPatch(typeof(FoodUtility), "BestFoodSourceOnMap")]
+    public class FoodUtility_BestFoodSourceOnMap {
+        static bool Prefix(Pawn eater, Pawn getter, bool allowForbidden, bool desperate, FoodPreferability maxPref, bool allowCorpse, bool allowDrug, out ThingDef foodDef, ref Thing __result) {
+            foodDef = null;
+            if(eater == null) {
+                return true;
+            }
+            if(!eater.NonHumanlikeOrWildMan()) {
+                return true;
+            }
+            Comp_PawnMenu comp = eater.GetComp<Comp_PawnMenu>();
+            if(comp == null) {
+                return true;
+            }
+            if(!comp.canHaveMenu(eater)) {
+                return true;
+            }
+            FoodPreferability minPref = FoodPreferability.NeverForNutrition;
+            Predicate<Thing> foodValidator = delegate (Thing t) {
+                if(!allowForbidden && t.IsForbidden(getter)) {
+                    return false;
+                }
+                if(t.def.ingestible.preferability < minPref) {
+                    return false;
+                }
+                if(t.def.ingestible.preferability > maxPref) {
+                    return false;
+                }
+                if(!t.IngestibleNow || !t.def.IsNutritionGivingIngestible || (!allowCorpse && t is Corpse) || (!allowDrug && t.def.IsDrug) || (!desperate && t.IsNotFresh()) || t.IsDessicated() || !eater.RaceProps.WillAutomaticallyEat(t) || !getter.AnimalAwareOf(t) || !getter.CanReserve(t, 1, -1, null, false)) {
+                    return false;
+                }
+                return comp.contains(t.def);
+            };
+            int searchRegionsMax = 100;
+            HashSet<Thing> ___filtered = new HashSet<Thing>();
+            foreach(Thing thing2 in GenRadial.RadialDistinctThingsAround(getter.Position, getter.Map, 2f, true)) {
+                Pawn pawn = thing2 as Pawn;
+                if(pawn != null && pawn != getter && pawn.RaceProps.Animal && pawn.CurJob != null && pawn.CurJob.def == JobDefOf.Ingest && pawn.CurJob.GetTarget(TargetIndex.A).HasThing) {
+                    ___filtered.Add(pawn.CurJob.GetTarget(TargetIndex.A).Thing);
+                }
+            }
+            bool ignoreEntirelyForbiddenRegions = !allowForbidden && ForbidUtility.CaresAboutForbidden(getter, true) && getter.playerSettings != null && getter.playerSettings.EffectiveAreaRestrictionInPawnCurrentMap != null;
+            Predicate<Thing> predicate = (Thing t) => foodValidator(t) && !___filtered.Contains(t) && !t.IsNotFresh();
+            IntVec3 position = getter.Position;
+            Map map = getter.Map;
+            ThingRequest thingRequest = ThingRequest.ForGroup(ThingRequestGroup.FoodSourceNotPlantOrTree);
+            PathEndMode peMode = PathEndMode.ClosestTouch;
+            TraverseParms traverseParams = TraverseParms.For(getter, Danger.Deadly, TraverseMode.ByPawn, false);
+            Thing bestThing = GenClosest.ClosestThingReachable(position, map, thingRequest, peMode, traverseParams, 9999f, predicate, null, 0, searchRegionsMax, false, RegionType.Set_Passable, ignoreEntirelyForbiddenRegions);
+            if(bestThing != null) {
+                if(bestThing != null) {
+                    foodDef = FoodUtility.GetFinalIngestibleDef(bestThing, false);
+                }
+                __result = bestThing;
+                return false;
+            }
+            return true;
         }
     }
 }

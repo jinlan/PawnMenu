@@ -3,7 +3,7 @@
 	<name>PawnMenu</name>
 	<author>TW</author>
 	<targetVersion>0.18.0</targetVersion>
-	<description>PawnMenu V 1.0
+	<description>PawnMenu V 1.1
 PawnMenu allow you to specify a pawn to eat specified kind of food first.
 
 &lt;color=orange&gt;&lt;b&gt;Requires HugsLib.\n&lt;/b&gt;&lt;/color&gt;

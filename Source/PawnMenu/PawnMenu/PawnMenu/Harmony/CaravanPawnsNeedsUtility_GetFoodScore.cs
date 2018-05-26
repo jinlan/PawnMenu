@@ -15,7 +15,7 @@ namespace PawnMenu {
             }
             Comp_PawnMenu comp = pawn.GetComp<Comp_PawnMenu>();
             if(comp != null && comp.canHaveMenu(pawn) && comp.contains(food)) {
-                __result = float.MaxValue;
+                __result += 10000;
                 return false;
             }
             return true;

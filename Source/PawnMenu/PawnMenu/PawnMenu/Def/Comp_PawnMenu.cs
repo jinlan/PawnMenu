@@ -36,7 +36,7 @@ namespace PawnMenu {
             return setting.filter.Allows(food);
         }
         public bool canHaveMenu(Thing thing) {
-            return thing != null && thing is Pawn && thing.Faction.IsPlayer && thing.def.race.Humanlike;
+            return thing != null && thing is Pawn && thing.Faction != null && thing.Faction.IsPlayer;
         }
     }
 }
