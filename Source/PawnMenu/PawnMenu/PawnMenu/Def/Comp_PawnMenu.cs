@@ -91,7 +91,7 @@ namespace PawnMenu {
         private void checkDef(ThingFilter filter) {
             List<ThingDef> illegalDefs = new List<ThingDef>();
             foreach(ThingDef def in filter.AllowedThingDefs) {
-                if(def.ingestible != null && (parent.def.race.foodType & def.ingestible.foodType) == 0) {
+                if(parent.def.race.CanEverEat(def)) {
                     illegalDefs.Add(def);
                 }
             }
