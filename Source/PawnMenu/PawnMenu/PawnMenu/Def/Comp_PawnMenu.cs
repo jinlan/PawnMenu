@@ -6,6 +6,19 @@ namespace PawnMenu {
     public class Comp_PawnMenu : ThingComp, IStoreSettingsParent {
 
         private StorageSettings setting;
+        private ThingFilter localFilter;
+
+        private bool useWholeKindSetting = true;
+
+        public bool UseWholeKindSetting {
+            get {
+                return useWholeKindSetting;
+            }
+            set {
+                useWholeKindSetting = value;
+                syncFilter();
+            }
+        }
 
         bool IStoreSettingsParent.StorageTabVisible {
             get {
@@ -14,12 +27,14 @@ namespace PawnMenu {
         }
 
         StorageSettings IStoreSettingsParent.GetParentStoreSettings() {
-            return ((CompProperties_PawnMenu)props).fixedStorageSettings; ;
+            return null;
         }
 
         StorageSettings IStoreSettingsParent.GetStoreSettings() {
             if(setting == null) {
                 setting = new StorageSettings(this);
+                localFilter = initFilter(setting.filter);
+                syncFilter();
             }
             return setting;
         }
@@ -45,6 +60,21 @@ namespace PawnMenu {
         }
         public bool canHaveMenu(Thing thing) {
             return thing != null && thing is Pawn && thing.Faction != null && thing.Faction.IsPlayer;
+        }
+        private void syncFilter() {
+            if(useWholeKindSetting) {
+                ThingDef def = parent.def;
+                if(!PawnMenuManager.KindSettings.ContainsKey(def)) {
+                    PawnMenuManager.KindSettings[def] = initFilter(new ThingFilter());
+                }
+                setting.filter = PawnMenuManager.KindSettings[def];
+            } else {
+                setting.filter = localFilter;
+            }
+        }
+        private ThingFilter initFilter(ThingFilter filter) {
+            filter.DisplayRootCategory = new TreeNode_ThingCategory(ThingCategoryDefOf.Foods);
+            return filter;
         }
     }
 }

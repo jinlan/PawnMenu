@@ -18,15 +18,8 @@
 	<Operation Class="PatchOperationAdd">
 		<xpath>/Defs/ThingDef[@Name="BasePawn"]/comps</xpath>
 		<value>
-			<li Class="PawnMenu.CompProperties_PawnMenu">
+			<li>
 				<compClass>PawnMenu.Comp_PawnMenu</compClass>
-				<fixedStorageSettings>
-					<filter>
-						<categories>
-							<li>Foods</li>
-						</categories>
-					</filter>
-				</fixedStorageSettings>
 			</li>
 		</value>
 	</Operation>
