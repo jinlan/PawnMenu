@@ -19,11 +19,10 @@ namespace PawnMenu {
         protected override void FillTab() {
             IStoreSettingsParent selStoreSettingsParent = this.SelStoreSettingsParent;
             Comp_PawnMenu comp = selStoreSettingsParent as Comp_PawnMenu;
-            StorageSettings settings = selStoreSettingsParent.GetStoreSettings();
             Rect position = new Rect(0f, 0f, 300, 30);
             GUI.BeginGroup(position);
             Text.Font = GameFont.Small;
-            Rect rect = new Rect(0f, 0f, 180f, 30f).ContractedBy(2f);
+            Rect rect = new Rect(8f, 0f, 180f, 30f).ContractedBy(2f);
             string labelWholeKindSetting = "Use whole kind setting";
             string labelLocalSetting = "Use personal setting";
             string buttonLabel;

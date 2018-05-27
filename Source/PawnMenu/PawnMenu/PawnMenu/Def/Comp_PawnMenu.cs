@@ -7,6 +7,7 @@ namespace PawnMenu {
 
         private StorageSettings setting;
         private ThingFilter localFilter;
+        private PawnMenuManager pawnMenuManager;
 
         private bool useWholeKindSetting = true;
 
@@ -20,6 +21,11 @@ namespace PawnMenu {
             }
         }
 
+        public override void Initialize(CompProperties props) {
+            base.Initialize(props);
+            pawnMenuManager = Find.World.GetComponent<PawnMenuManager>();
+        }
+
         bool IStoreSettingsParent.StorageTabVisible {
             get {
                 return canHaveMenu(parent);
@@ -27,22 +33,18 @@ namespace PawnMenu {
         }
 
         StorageSettings IStoreSettingsParent.GetParentStoreSettings() {
-            return null;
+            return pawnMenuManager.ParentSetting;
         }
 
         StorageSettings IStoreSettingsParent.GetStoreSettings() {
-            if(setting == null) {
-                setting = new StorageSettings(this);
-                localFilter = initFilter(setting.filter);
-                syncFilter();
-            }
+            syncFilter();
             return setting;
         }
 
         public override void PostExposeData() {
             base.PostExposeData();
-            if(setting != null) {
-                Scribe_Deep.Look<StorageSettings>(ref setting, "s");
+            if(activated()) {
+                Scribe_Deep.Look<ThingFilter>(ref localFilter, "lF");
             }
         }
 
@@ -62,19 +64,21 @@ namespace PawnMenu {
             return thing != null && thing is Pawn && thing.Faction != null && thing.Faction.IsPlayer;
         }
         private void syncFilter() {
+            if(setting == null) {
+                setting = new StorageSettings();
+            }
             if(useWholeKindSetting) {
                 ThingDef def = parent.def;
-                if(!PawnMenuManager.KindSettings.ContainsKey(def)) {
-                    PawnMenuManager.KindSettings[def] = initFilter(new ThingFilter());
+                if(!pawnMenuManager.KindFilter.ContainsKey(def)) {
+                    pawnMenuManager.KindFilter[def] = new ThingFilter();
                 }
-                setting.filter = PawnMenuManager.KindSettings[def];
+                setting.filter = pawnMenuManager.KindFilter[def];
             } else {
+                if(localFilter == null) {
+                    localFilter = new ThingFilter();
+                }
                 setting.filter = localFilter;
             }
-        }
-        private ThingFilter initFilter(ThingFilter filter) {
-            filter.DisplayRootCategory = new TreeNode_ThingCategory(ThingCategoryDefOf.Foods);
-            return filter;
         }
     }
 }

@@ -2,15 +2,24 @@
 using System.Collections.Generic;
 using Verse;
 using RimWorld;
+using RimWorld.Planet;
 
 namespace PawnMenu {
 
-    public class PawnMenuManager {
+    public class PawnMenuManager : WorldComponent {
 
-        public static Dictionary<ThingDef, ThingFilter> KindSettings;
+        public Dictionary<ThingDef, ThingFilter> KindFilter;
+        public StorageSettings ParentSetting;
 
-        static PawnMenuManager() {
-            KindSettings = new Dictionary<ThingDef, ThingFilter>();
+        public PawnMenuManager(World world) : base(world) {
+            KindFilter = new Dictionary<ThingDef, ThingFilter>();
+            ParentSetting = new StorageSettings();
+            ParentSetting.filter.SetAllow(ThingCategoryDefOf.Foods, true);
+        }
+
+        public override void ExposeData() {
+            base.ExposeData();
+            Scribe_Collections.Look<ThingDef, ThingFilter>(ref KindFilter, "KF", LookMode.Def, LookMode.Deep);
         }
     }
 }
