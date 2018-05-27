@@ -60,7 +60,7 @@ namespace PawnMenu {
 
     [HarmonyPatch(typeof(FoodUtility), "BestFoodSourceOnMap")]
     public class FoodUtility_BestFoodSourceOnMap {
-        static bool Prefix(Pawn eater, Pawn getter, bool allowForbidden, bool desperate, FoodPreferability maxPref, bool allowCorpse, bool allowDrug, out ThingDef foodDef, ref Thing __result) {
+        static bool Prefix(Pawn eater, Pawn getter, bool allowPlant, bool allowForbidden, bool desperate, FoodPreferability maxPref, bool allowCorpse, bool allowDrug, out ThingDef foodDef, ref Thing __result) {
             foodDef = null;
             if(eater == null) {
                 return true;
@@ -103,7 +103,12 @@ namespace PawnMenu {
             Predicate<Thing> predicate = (Thing t) => foodValidator(t) && !___filtered.Contains(t) && !t.IsNotFresh();
             IntVec3 position = getter.Position;
             Map map = getter.Map;
-            ThingRequest thingRequest = ThingRequest.ForGroup(ThingRequestGroup.FoodSourceNotPlantOrTree);
+            ThingRequest thingRequest;
+            if((eater.RaceProps.foodType & (FoodTypeFlags.Plant | FoodTypeFlags.Tree)) != FoodTypeFlags.None && allowPlant) {
+                thingRequest = ThingRequest.ForGroup(ThingRequestGroup.FoodSource);
+            } else {
+                thingRequest = ThingRequest.ForGroup(ThingRequestGroup.FoodSourceNotPlantOrTree);
+            }
             PathEndMode peMode = PathEndMode.ClosestTouch;
             TraverseParms traverseParams = TraverseParms.For(getter, Danger.Deadly, TraverseMode.ByPawn, false);
             Thing bestThing = GenClosest.ClosestThingReachable(position, map, thingRequest, peMode, traverseParams, 9999f, predicate, null, 0, searchRegionsMax, false, RegionType.Set_Passable, ignoreEntirelyForbiddenRegions);

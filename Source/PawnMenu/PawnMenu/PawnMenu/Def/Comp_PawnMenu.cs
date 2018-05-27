@@ -1,4 +1,8 @@
 ﻿using System;
+using System.Text;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 using RimWorld;
 using Verse;
 
@@ -70,14 +74,40 @@ namespace PawnMenu {
             if(useWholeKindSetting) {
                 ThingDef def = parent.def;
                 if(!pawnMenuManager.KindFilter.ContainsKey(def)) {
-                    pawnMenuManager.KindFilter[def] = new ThingFilter();
+                    pawnMenuManager.KindFilter[def] = new ThingFilter(() => {
+                        checkDef(pawnMenuManager.KindFilter[def]);
+                    });
                 }
                 setting.filter = pawnMenuManager.KindFilter[def];
             } else {
                 if(localFilter == null) {
-                    localFilter = new ThingFilter();
+                    localFilter = new ThingFilter(() => {
+                        checkDef(localFilter);
+                    });
                 }
                 setting.filter = localFilter;
+            }
+        }
+        private void checkDef(ThingFilter filter) {
+            List<ThingDef> illegalDefs = new List<ThingDef>();
+            foreach(ThingDef def in filter.AllowedThingDefs) {
+                if(def.ingestible != null && (parent.def.race.foodType & def.ingestible.foodType) == 0) {
+                    illegalDefs.Add(def);
+                }
+            }
+            if(illegalDefs.Count != 0) {
+                StringBuilder sb = new StringBuilder();
+                int i = 0;
+                illegalDefs.ForEach((ThingDef arg) => {
+                    sb.Append(arg);
+                    i++;
+                    if(i <= illegalDefs.Count - 1) {
+                        sb.Append(',');
+                        sb.Append(' ');
+                    }
+                    filter.SetAllow(arg, false);
+                });
+                MoteMaker.ThrowText(parent.Position.ToVector3Shifted(), parent.Map, parent.def.defName + " can not eat: " + sb);
             }
         }
     }
