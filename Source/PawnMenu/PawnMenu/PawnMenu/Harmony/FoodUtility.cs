@@ -62,6 +62,9 @@ namespace PawnMenu {
     public class FoodUtility_BestFoodSourceOnMap {
         static bool Prefix(Pawn eater, Pawn getter, bool allowPlant, bool allowForbidden, bool desperate, FoodPreferability maxPref, bool allowCorpse, bool allowDrug, out ThingDef foodDef, ref Thing __result) {
             foodDef = null;
+            if(eater.def.race.Humanlike) {
+                return true;
+            }
             if(eater == null) {
                 return true;
             }
