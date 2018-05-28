@@ -53,7 +53,7 @@ namespace PawnMenu {
         }
 
         public bool activated() {
-            return localFilterActivated() || kindFilterActivated();
+            return (!useWholeKindSetting && localFilterActivated()) || (useWholeKindSetting && kindFilterActivated());
         }
         public bool contains(ThingDef food) {
             if(!activated()) {
