@@ -65,9 +65,6 @@ namespace PawnMenu {
             if(eater.def.race.Humanlike) {
                 return true;
             }
-            if(eater == null) {
-                return true;
-            }
             Comp_PawnMenu comp = eater.GetComp<Comp_PawnMenu>();
             if(comp == null) {
                 return true;
