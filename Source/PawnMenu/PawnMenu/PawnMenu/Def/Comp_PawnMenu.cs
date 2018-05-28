@@ -21,7 +21,7 @@ namespace PawnMenu {
             }
             set {
                 useWholeKindSetting = value;
-                syncFilter();
+                syncSetting();
             }
         }
 
@@ -41,33 +41,37 @@ namespace PawnMenu {
         }
 
         StorageSettings IStoreSettingsParent.GetStoreSettings() {
-            syncFilter();
+            syncSetting();
             return setting;
         }
 
         public override void PostExposeData() {
             base.PostExposeData();
-            if(activated()) {
+            if(localFilterActivated()) {
                 Scribe_Deep.Look<ThingFilter>(ref localFilter, "lF");
             }
         }
 
         public bool activated() {
-            if(setting == null) {
-                return false;
-            }
-            return setting.filter.AllowedDefCount > 0;
+            return localFilterActivated() || kindFilterActivated();
         }
         public bool contains(ThingDef food) {
             if(!activated()) {
                 return false;
             }
+            syncSetting();
             return setting.filter.Allows(food);
         }
         public bool canHaveMenu(Thing thing) {
             return thing != null && thing is Pawn && thing.Faction != null && thing.Faction.IsPlayer;
         }
-        private void syncFilter() {
+        private bool kindFilterActivated() {
+            return pawnMenuManager.KindFilter.ContainsKey(parent.def) && pawnMenuManager.KindFilter[parent.def].AllowedDefCount > 0;
+        }
+        private bool localFilterActivated() {
+            return localFilter != null && localFilter.AllowedDefCount > 0;
+        }
+        private void syncSetting() {
             if(setting == null) {
                 setting = new StorageSettings();
             }
@@ -90,8 +94,13 @@ namespace PawnMenu {
         }
         private void checkDef(ThingFilter filter) {
             List<ThingDef> illegalDefs = new List<ThingDef>();
+            Thing selectedThing = Find.Selector.SingleSelectedThing;
+            Pawn selectedPawn = selectedThing as Pawn;
+            if(selectedPawn == null) {
+                return;
+            }
             foreach(ThingDef def in filter.AllowedThingDefs) {
-                if(parent.def.race.CanEverEat(def)) {
+                if(!selectedPawn.def.race.CanEverEat(def)) {
                     illegalDefs.Add(def);
                 }
             }
@@ -107,7 +116,7 @@ namespace PawnMenu {
                     }
                     filter.SetAllow(arg, false);
                 });
-                MoteMaker.ThrowText(parent.Position.ToVector3Shifted(), parent.Map, parent.def.defName + " can not eat: " + sb);
+                MoteMaker.ThrowText(selectedPawn.Position.ToVector3Shifted(), selectedPawn.Map, selectedPawn.def.defName + " can not eat: " + sb);
             }
         }
     }

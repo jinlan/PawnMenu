@@ -28,9 +28,9 @@ namespace PawnMenu {
             ThingOwner<Thing> innerContainer = holder.inventory.innerContainer;
             for(int i = 0; i < innerContainer.Count; i++) {
                 Thing thing = innerContainer[i];
-                if(thing.def.IsNutritionGivingIngestible && thing.IngestibleNow && eater.RaceProps.CanEverEat(thing) && thing.def.ingestible.preferability >= minFoodPref && thing.def.ingestible.preferability <= maxFoodPref && (allowDrug || !thing.def.IsDrug)) {
+                if(thing.def.IsNutritionGivingIngestible && thing.IngestibleNow && eater.RaceProps.CanEverEat(thing) && thing.def.ingestible.preferability >= minFoodPref && thing.def.ingestible.preferability <= maxFoodPref && (allowDrug || !thing.def.IsDrug) && comp.contains(thing.def)) {
                     float num = thing.def.ingestible.nutrition * (float)thing.stackCount;
-                    if(num >= minStackNutrition && comp.contains(thing.def)) {
+                    if(num >= minStackNutrition) {
                         __result = thing;
                         return false;
                     }
@@ -53,7 +53,7 @@ namespace PawnMenu {
                 return;
             }
             if(comp.contains(foodDef)) {
-                __result += 10000;
+                __result += 100000;
             }
         }
     }
@@ -63,9 +63,6 @@ namespace PawnMenu {
         static bool Prefix(Pawn eater, Pawn getter, bool allowPlant, bool allowForbidden, bool desperate, FoodPreferability maxPref, bool allowCorpse, bool allowDrug, out ThingDef foodDef, ref Thing __result) {
             foodDef = null;
             if(eater == null) {
-                return true;
-            }
-            if(!eater.NonHumanlikeOrWildMan()) {
                 return true;
             }
             Comp_PawnMenu comp = eater.GetComp<Comp_PawnMenu>();
@@ -91,6 +88,12 @@ namespace PawnMenu {
                 }
                 return comp.contains(t.def);
             };
+            ThingRequest thingRequest;
+            if((eater.RaceProps.foodType & (FoodTypeFlags.Plant | FoodTypeFlags.Tree)) != FoodTypeFlags.None && allowPlant) {
+                thingRequest = ThingRequest.ForGroup(ThingRequestGroup.FoodSource);
+            } else {
+                thingRequest = ThingRequest.ForGroup(ThingRequestGroup.FoodSourceNotPlantOrTree);
+            }
             int searchRegionsMax = 100;
             HashSet<Thing> ___filtered = new HashSet<Thing>();
             foreach(Thing thing2 in GenRadial.RadialDistinctThingsAround(getter.Position, getter.Map, 2f, true)) {
@@ -103,12 +106,6 @@ namespace PawnMenu {
             Predicate<Thing> predicate = (Thing t) => foodValidator(t) && !___filtered.Contains(t) && !t.IsNotFresh();
             IntVec3 position = getter.Position;
             Map map = getter.Map;
-            ThingRequest thingRequest;
-            if((eater.RaceProps.foodType & (FoodTypeFlags.Plant | FoodTypeFlags.Tree)) != FoodTypeFlags.None && allowPlant) {
-                thingRequest = ThingRequest.ForGroup(ThingRequestGroup.FoodSource);
-            } else {
-                thingRequest = ThingRequest.ForGroup(ThingRequestGroup.FoodSourceNotPlantOrTree);
-            }
             PathEndMode peMode = PathEndMode.ClosestTouch;
             TraverseParms traverseParams = TraverseParms.For(getter, Danger.Deadly, TraverseMode.ByPawn, false);
             Thing bestThing = GenClosest.ClosestThingReachable(position, map, thingRequest, peMode, traverseParams, 9999f, predicate, null, 0, searchRegionsMax, false, RegionType.Set_Passable, ignoreEntirelyForbiddenRegions);
