@@ -9,8 +9,8 @@ namespace PawnMenu {
     [HarmonyPatch(typeof(FoodUtility), "BestFoodInInventory")]
     public class FoodUtility_BestFoodInInventory {
         static bool Prefix(ref Thing __result, Pawn holder, Pawn eater = null, FoodPreferability minFoodPref = FoodPreferability.NeverForNutrition, FoodPreferability maxFoodPref = FoodPreferability.MealLavish, float minStackNutrition = 0f, bool allowDrug = false) {
-            if(holder.inventory == null) {
-                return true;
+            if(holder == null || holder.inventory == null) {
+                return false;
             }
             if(eater == null) {
                 eater = holder;
@@ -62,7 +62,7 @@ namespace PawnMenu {
     public class FoodUtility_BestFoodSourceOnMap {
         static bool Prefix(Pawn eater, Pawn getter, bool allowPlant, bool allowForbidden, bool desperate, FoodPreferability maxPref, bool allowCorpse, bool allowDrug, out ThingDef foodDef, ref Thing __result) {
             foodDef = null;
-            if(eater.Faction == null || !eater.Faction.IsPlayer || eater.def.race.Humanlike) {
+            if(eater == null || eater.Faction == null || !eater.Faction.IsPlayer || eater.def.race.Humanlike) {
                 return true;
             }
             Comp_PawnMenu comp = eater.GetComp<Comp_PawnMenu>();
