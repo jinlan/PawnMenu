@@ -8,7 +8,7 @@ namespace PawnMenu {
     [HarmonyPatch(typeof(JobGiver_EatInPartyArea), "FindFood")]
     public class JobGiver_EatInPartyArea_FindFood {
         static bool Prefix(Pawn pawn, IntVec3 partySpot, ref Thing __result) {
-            if(pawn == null) {
+            if(pawn == null || pawn.Faction == null || !pawn.Faction.IsPlayer) {
                 return true;
             }
             Comp_PawnMenu comp = pawn.GetComp<Comp_PawnMenu>();

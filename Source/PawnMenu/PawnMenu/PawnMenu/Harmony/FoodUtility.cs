@@ -15,7 +15,7 @@ namespace PawnMenu {
             if(eater == null) {
                 eater = holder;
             }
-            if(eater == null) {
+            if(eater == null || eater.Faction == null || !eater.Faction.IsPlayer) {
                 return true;
             }
             Comp_PawnMenu comp = eater.GetComp<Comp_PawnMenu>();
@@ -42,7 +42,7 @@ namespace PawnMenu {
     [HarmonyPatch(typeof(FoodUtility), "FoodOptimality")]
     public class FoodUtility_FoodOptimality {
         static void Postfix(Pawn eater, ThingDef foodDef, ref float __result) {
-            if(eater == null || foodDef == null) {
+            if(eater == null || foodDef == null || eater.Faction == null || !eater.Faction.IsPlayer) {
                 return;
             }
             Comp_PawnMenu comp = eater.GetComp<Comp_PawnMenu>();
@@ -62,7 +62,7 @@ namespace PawnMenu {
     public class FoodUtility_BestFoodSourceOnMap {
         static bool Prefix(Pawn eater, Pawn getter, bool allowPlant, bool allowForbidden, bool desperate, FoodPreferability maxPref, bool allowCorpse, bool allowDrug, out ThingDef foodDef, ref Thing __result) {
             foodDef = null;
-            if(eater.def.race.Humanlike) {
+            if(eater.Faction == null || !eater.Faction.IsPlayer || eater.def.race.Humanlike) {
                 return true;
             }
             Comp_PawnMenu comp = eater.GetComp<Comp_PawnMenu>();

@@ -8,7 +8,7 @@ namespace PawnMenu {
     [HarmonyPatch(typeof(JobGiver_EatRandom), "TryGiveJob")]
     public class JobGiver_EatRandom_TryGiveJob {
         static bool Prefix(Pawn pawn, ref Thing __result) {
-            if(pawn == null) {
+            if(pawn == null || pawn.Faction == null || !pawn.Faction.IsPlayer) {
                 return true;
             }
             Comp_PawnMenu comp = pawn.GetComp<Comp_PawnMenu>();

@@ -10,7 +10,7 @@ namespace PawnMenu {
     [HarmonyPatch(typeof(CaravanPawnsNeedsUtility), "GetFoodScore", new Type[] { typeof(ThingDef), typeof(Pawn) })]
     public static class CaravanPawnsNeedsUtility_GetFoodScore {
         static bool Prefix(ThingDef food, Pawn pawn, ref float __result) {
-            if(pawn == null) {
+            if(pawn == null || pawn.Faction == null || !pawn.Faction.IsPlayer) {
                 return true;
             }
             Comp_PawnMenu comp = pawn.GetComp<Comp_PawnMenu>();
