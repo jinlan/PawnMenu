@@ -11,19 +11,8 @@ namespace PawnMenu {
 
         private StorageSettings setting;
         private ThingFilter localFilter;
+        private ThingFilter localFilterBeforeSleep;
         private PawnMenuManager pawnMenuManager;
-
-        private bool useWholeKindSetting = true;
-
-        public bool UseWholeKindSetting {
-            get {
-                return useWholeKindSetting;
-            }
-            set {
-                useWholeKindSetting = value;
-                syncSetting();
-            }
-        }
 
         public override void Initialize(CompProperties props) {
             base.Initialize(props);
@@ -41,58 +30,116 @@ namespace PawnMenu {
         }
 
         StorageSettings IStoreSettingsParent.GetStoreSettings() {
-            syncSetting();
             return setting;
         }
-
+        public void activateForAndWhen(bool kind, bool beforeSleep) {
+            if(kind) {
+                ThingDef def = parent.def;
+                Dictionary<ThingDef, ThingFilter> filters;
+                if(beforeSleep) {
+                    filters = pawnMenuManager.KindFilterBeforeSleep;
+                } else {
+                    filters = pawnMenuManager.KindFilter;
+                }
+                if(!filters.ContainsKey(def)) {
+                    filters[def] = new ThingFilter(() => {
+                        checkDef();
+                    });
+                }
+                syncSetting(filters[def]);
+            } else {
+                if(beforeSleep && localFilterBeforeSleep == null) {
+                    localFilterBeforeSleep = new ThingFilter(() => {
+                        checkDef();
+                    });
+                    syncSetting(localFilterBeforeSleep);
+                }
+                if(!beforeSleep && localFilter == null) {
+                    localFilter = new ThingFilter(() => {
+                        checkDef();
+                    });
+                    syncSetting(localFilter);
+                }
+            }
+        }
         public override void PostExposeData() {
             base.PostExposeData();
-            if(localFilterActivated()) {
-                Scribe_Deep.Look<ThingFilter>(ref localFilter, "lF");
-            }
+            Scribe_Deep.Look<ThingFilter>(ref localFilter, "lF");
+            Scribe_Deep.Look<ThingFilter>(ref localFilterBeforeSleep, "lFBS");
+            syncSetting();
         }
 
         public bool activated() {
-            return parent.Faction != null && parent.Faction.IsPlayer && (!useWholeKindSetting && localFilterActivated()) || (useWholeKindSetting && kindFilterActivated());
+            if(setting == null) {
+                return false;
+            }
+            if(parent.Faction == null || !parent.Faction.IsPlayer) {
+                return false;
+            }
+            if(localBeforeSleepActivated()) {
+                return true;
+            }
+            if(localNormalActivated()) {
+                return true;
+            }
+            if(kindBeforeSleepActivated()) {
+                return true;
+            }
+            if(kindNormalActivated()) {
+                return true;
+            }
+            return false;
         }
         public bool contains(ThingDef food) {
             if(!activated()) {
                 return false;
             }
-            syncSetting();
             return setting.filter.Allows(food);
         }
         public bool canHaveMenu(Thing thing) {
             return thing != null && thing is Pawn && thing.Faction != null && thing.Faction.IsPlayer;
         }
-        private bool kindFilterActivated() {
+        private bool kindNormalActivated() {
             return pawnMenuManager.KindFilter.ContainsKey(parent.def) && pawnMenuManager.KindFilter[parent.def].AllowedDefCount > 0;
         }
-        private bool localFilterActivated() {
-            return localFilter != null && localFilter.AllowedDefCount > 0;
+        private bool kindBeforeSleepActivated() {
+            return closeToSleepNow() && pawnMenuManager.KindFilterBeforeSleep.ContainsKey(parent.def) && pawnMenuManager.KindFilterBeforeSleep[parent.def].AllowedDefCount > 0;
         }
-        private void syncSetting() {
+        private bool localNormalActivated() {
+            return localFilter != null && localFilter.AllowedDefCount > 0; ;
+        }
+        private bool localBeforeSleepActivated() {
+            return closeToSleepNow() && localFilterBeforeSleep != null && localFilterBeforeSleep.AllowedDefCount > 0;
+        }
+        private void syncSetting(ThingFilter filter = null) {
             if(setting == null) {
                 setting = new StorageSettings();
             }
-            if(useWholeKindSetting) {
-                ThingDef def = parent.def;
-                if(!pawnMenuManager.KindFilter.ContainsKey(def)) {
-                    pawnMenuManager.KindFilter[def] = new ThingFilter(() => {
-                        checkDef(pawnMenuManager.KindFilter[def]);
-                    });
-                }
-                setting.filter = pawnMenuManager.KindFilter[def];
-            } else {
-                if(localFilter == null) {
-                    localFilter = new ThingFilter(() => {
-                        checkDef(localFilter);
-                    });
-                }
+            if(filter != null) {
+                setting.filter = filter;
+                return;
+            }
+            if(localBeforeSleepActivated()) {
+                setting.filter = localFilterBeforeSleep;
+                return;
+            }
+            if(localNormalActivated()) {
                 setting.filter = localFilter;
+                return;
+            }
+            if(kindBeforeSleepActivated()) {
+                setting.filter = pawnMenuManager.KindFilterBeforeSleep[parent.def];
+                return;
+            }
+            if(kindNormalActivated()) {
+                setting.filter = pawnMenuManager.KindFilter[parent.def];
+                return;
             }
         }
-        private void checkDef(ThingFilter filter) {
+        private void checkDef(ThingFilter filter = null) {
+            if(filter == null) {
+                filter = setting.filter;
+            }
             List<ThingDef> illegalDefs = new List<ThingDef>();
             Thing selectedThing = Find.Selector.SingleSelectedThing;
             Pawn selectedPawn = selectedThing as Pawn;
@@ -118,6 +165,9 @@ namespace PawnMenu {
                 });
                 MoteMaker.ThrowText(selectedPawn.Position.ToVector3Shifted(), selectedPawn.Map, selectedPawn.def.defName + " can not eat: " + sb);
             }
+        }
+        private bool closeToSleepNow() {
+            return ((Pawn)parent).needs.rest.CurLevel <= 0.4;
         }
     }
 }
