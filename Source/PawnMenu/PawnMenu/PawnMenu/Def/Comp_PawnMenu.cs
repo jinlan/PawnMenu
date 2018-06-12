@@ -167,7 +167,15 @@ namespace PawnMenu {
             }
         }
         private bool closeToSleepNow() {
-            return ((Pawn)parent).needs.rest.CurLevel <= 0.4;
+            if(!(parent is Pawn) || ((Pawn)parent).needs == null || ((Pawn)parent).needs.rest == null) {
+                return false;
+            }
+            Need_Rest rest = ((Pawn)parent).needs.rest;
+            if(rest.MaxLevel >= 0.8) {
+                return rest.CurLevel <= 0.4;
+            } else {
+                return rest.CurLevelPercentage <= 0.5;
+            }
         }
     }
 }
