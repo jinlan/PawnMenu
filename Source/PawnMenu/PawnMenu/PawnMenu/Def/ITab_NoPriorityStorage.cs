@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using RimWorld;
@@ -8,7 +8,7 @@ using UnityEngine;
 namespace PawnMenu {
     public class ITab_NoPriorityStorage : ITab_Storage {
         private bool kind = true;
-        private bool beforeSleep = false;
+        private bool supper = false;
         public ITab_NoPriorityStorage() : base() {
             this.labelKey = "Menu";
             this.tutorTag = "Menu";
@@ -21,7 +21,7 @@ namespace PawnMenu {
         protected override void FillTab() {
             IStoreSettingsParent selStoreSettingsParent = this.SelStoreSettingsParent;
             Comp_PawnMenu comp = selStoreSettingsParent as Comp_PawnMenu;
-            comp.activateForAndWhen(kind, beforeSleep);
+            comp.syncForAndWhen(kind, supper);
             Rect rect = new Rect(8f, 0f, 300f, 30f);
             rect = rect.ContractedBy(2f);
             GUI.BeginGroup(rect);
@@ -30,7 +30,7 @@ namespace PawnMenu {
             string labelKind = "Kind";
             string labelSelf = "Self";
             string labelNormal = "Breakfast";
-            string labelBeforeSleep = "Supper";
+            string labelSupper = "Supper";
             string buttonLabel;
             if(kind) {
                 buttonLabel = labelKind;
@@ -44,11 +44,11 @@ namespace PawnMenu {
                 List<FloatMenuOption> list = new List<FloatMenuOption>();
                 list.Add(new FloatMenuOption(labelKind, delegate {
                     kind = true;
-                    comp.activateForAndWhen(kind, beforeSleep);
+                    comp.syncForAndWhen(kind, supper);
                 }));
                 list.Add(new FloatMenuOption(labelSelf, delegate {
                     kind = false;
-                    comp.activateForAndWhen(kind, beforeSleep);
+                    comp.syncForAndWhen(kind, supper);
                 }));
                 Find.WindowStack.Add(new FloatMenu(list));
             }
@@ -56,20 +56,20 @@ namespace PawnMenu {
             rect = new Rect(100f, 0f, 45f, 30f);
             Widgets.Label(rect, "When:");
             rect = new Rect(145f, 0f, 100f, 30f);
-            if(beforeSleep) {
-                buttonLabel = labelBeforeSleep;
+            if(supper) {
+                buttonLabel = labelSupper;
             } else {
                 buttonLabel = labelNormal;
             }
             if(Widgets.ButtonText(rect, buttonLabel, true, false, true)) {
                 List<FloatMenuOption> list = new List<FloatMenuOption>();
-                list.Add(new FloatMenuOption(labelBeforeSleep, delegate {
-                    beforeSleep = true;
-                    comp.activateForAndWhen(kind, beforeSleep);
+                list.Add(new FloatMenuOption(labelSupper, delegate {
+                    supper = true;
+                    comp.syncForAndWhen(kind, supper);
                 }));
                 list.Add(new FloatMenuOption(labelNormal, delegate {
-                    beforeSleep = false;
-                    comp.activateForAndWhen(kind, beforeSleep);
+                    supper = false;
+                    comp.syncForAndWhen(kind, supper);
                 }));
                 Find.WindowStack.Add(new FloatMenu(list));
             }

@@ -1,8 +1,5 @@
-﻿using System;
-using System.Text;
-using System.Collections;
+﻿using System.Text;
 using System.Collections.Generic;
-using System.Linq;
 using RimWorld;
 using Verse;
 
@@ -32,11 +29,11 @@ namespace PawnMenu {
         StorageSettings IStoreSettingsParent.GetStoreSettings() {
             return setting;
         }
-        public void activateForAndWhen(bool kind, bool beforeSleep) {
+        public void syncForAndWhen(bool kind, bool supper) {
             if(kind) {
                 ThingDef def = parent.def;
                 Dictionary<ThingDef, ThingFilter> filters;
-                if(beforeSleep) {
+                if(supper) {
                     filters = pawnMenuManager.KindFilterBeforeSleep;
                 } else {
                     filters = pawnMenuManager.KindFilter;
@@ -48,17 +45,20 @@ namespace PawnMenu {
                 }
                 syncSetting(filters[def]);
             } else {
-                if(beforeSleep && localFilterBeforeSleep == null) {
-                    localFilterBeforeSleep = new ThingFilter(() => {
-                        checkDef();
-                    });
+                if(supper) {
+                    if(localFilterBeforeSleep == null) {
+                        localFilterBeforeSleep = new ThingFilter(() => {
+                            checkDef();
+                        });
+                    }
                     syncSetting(localFilterBeforeSleep);
-                }
-                if(!beforeSleep && localFilter == null) {
-                    localFilter = new ThingFilter(() => {
-                        checkDef();
-                    });
-                    syncSetting(localFilter);
+                } else {
+                    if(localFilterBeforeSleep == null) {
+                        localFilterBeforeSleep = new ThingFilter(() => {
+                            checkDef();
+                        });
+                    }
+                    syncSetting(localFilterBeforeSleep);
                 }
             }
         }
