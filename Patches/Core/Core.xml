@@ -5,7 +5,7 @@
 		<operations>
 			<li Class="PatchOperationTest">
 				<xpath>/Defs/ThingDef[@Name="BasePawn"]/comps</xpath>
-				<success>Invert</success>
+				<success>Never</success>
 			</li>
 			<li Class="PatchOperationAdd">
 				<xpath>/Defs/ThingDef[@Name="BasePawn"]</xpath>
@@ -28,7 +28,7 @@
 		<operations>
 			<li Class="PatchOperationTest">
 				<xpath>/Defs/ThingDef[@Name="BasePawn"]/inspectorTabs</xpath>
-				<success>Invert</success>
+				<success>Never</success>
 			</li>
 			<li Class="PatchOperationAdd">
 				<xpath>/Defs/ThingDef[@Name="BasePawn"]</xpath>
