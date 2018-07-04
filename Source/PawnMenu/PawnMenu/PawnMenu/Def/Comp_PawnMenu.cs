@@ -53,12 +53,12 @@ namespace PawnMenu {
                     }
                     syncSetting(localFilterBeforeSleep);
                 } else {
-                    if(localFilterBeforeSleep == null) {
-                        localFilterBeforeSleep = new ThingFilter(() => {
+                    if(localFilter == null) {
+                        localFilter = new ThingFilter(() => {
                             checkDef();
                         });
                     }
-                    syncSetting(localFilterBeforeSleep);
+                    syncSetting(localFilter);
                 }
             }
         }
