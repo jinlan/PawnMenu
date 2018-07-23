@@ -7,8 +7,7 @@ using UnityEngine;
 
 namespace PawnMenu {
     public class ITab_NoPriorityStorage : ITab_Storage {
-        private bool kind = true;
-        private bool supper = false;
+
         public ITab_NoPriorityStorage() : base() {
             this.labelKey = "Menu";
             this.tutorTag = "Menu";
@@ -21,7 +20,7 @@ namespace PawnMenu {
         protected override void FillTab() {
             IStoreSettingsParent selStoreSettingsParent = this.SelStoreSettingsParent;
             Comp_PawnMenu comp = selStoreSettingsParent as Comp_PawnMenu;
-            comp.syncForAndWhen(kind, supper);
+            comp.syncForAndWhen(comp.kind, comp.supper);
             Rect rect = new Rect(8f, 0f, 300f, 30f);
             rect = rect.ContractedBy(2f);
             GUI.BeginGroup(rect);
@@ -32,7 +31,7 @@ namespace PawnMenu {
             string labelNormal = "Breakfast";
             string labelSupper = "Supper";
             string buttonLabel;
-            if(kind) {
+            if(comp.kind) {
                 buttonLabel = labelKind;
             } else {
                 buttonLabel = labelSelf;
@@ -43,12 +42,12 @@ namespace PawnMenu {
             if(Widgets.ButtonText(rect, buttonLabel, true, false, true)) {
                 List<FloatMenuOption> list = new List<FloatMenuOption>();
                 list.Add(new FloatMenuOption(labelKind, delegate {
-                    kind = true;
-                    comp.syncForAndWhen(kind, supper);
+                    comp.kind = true;
+                    comp.syncForAndWhen(comp.kind, comp.supper);
                 }));
                 list.Add(new FloatMenuOption(labelSelf, delegate {
-                    kind = false;
-                    comp.syncForAndWhen(kind, supper);
+                    comp.kind = false;
+                    comp.syncForAndWhen(comp.kind, comp.supper);
                 }));
                 Find.WindowStack.Add(new FloatMenu(list));
             }
@@ -56,7 +55,7 @@ namespace PawnMenu {
             rect = new Rect(100f, 0f, 45f, 30f);
             Widgets.Label(rect, "When:");
             rect = new Rect(145f, 0f, 100f, 30f);
-            if(supper) {
+            if(comp.supper) {
                 buttonLabel = labelSupper;
             } else {
                 buttonLabel = labelNormal;
@@ -64,12 +63,12 @@ namespace PawnMenu {
             if(Widgets.ButtonText(rect, buttonLabel, true, false, true)) {
                 List<FloatMenuOption> list = new List<FloatMenuOption>();
                 list.Add(new FloatMenuOption(labelSupper, delegate {
-                    supper = true;
-                    comp.syncForAndWhen(kind, supper);
+                    comp.supper = true;
+                    comp.syncForAndWhen(comp.kind, comp.supper);
                 }));
                 list.Add(new FloatMenuOption(labelNormal, delegate {
-                    supper = false;
-                    comp.syncForAndWhen(kind, supper);
+                    comp.supper = false;
+                    comp.syncForAndWhen(comp.kind, comp.supper);
                 }));
                 Find.WindowStack.Add(new FloatMenu(list));
             }

@@ -10,6 +10,8 @@ namespace PawnMenu {
         private ThingFilter localFilter;
         private ThingFilter localFilterBeforeSleep;
         private PawnMenuManager pawnMenuManager;
+        public bool kind = true;
+        public bool supper = false;
 
         public override void Initialize(CompProperties props) {
             base.Initialize(props);
@@ -66,6 +68,8 @@ namespace PawnMenu {
             base.PostExposeData();
             Scribe_Deep.Look<ThingFilter>(ref localFilter, "lF");
             Scribe_Deep.Look<ThingFilter>(ref localFilterBeforeSleep, "lFBS");
+            Scribe_Values.Look<bool>(ref kind, "k");
+            Scribe_Values.Look<bool>(ref supper, "s");
             syncSetting();
         }
 
